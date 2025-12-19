@@ -73,13 +73,17 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 GROQ_MODEL = "llama-3.1-8b-instant" 
 
-if not GROQ_API_KEY or not DEEPGRAM_API_KEY:
-    logger.error("Missing GROQ_API_KEY or DEEPGRAM_API_KEY in .env")
+# Only initialize if API keys are provided (optional feature)
+groq_client = None
+deepgram_client = None
 
-# Initialize Clients
-groq_client = AsyncGroq(api_key=GROQ_API_KEY)
-# Used for TTS (REST)
-deepgram_client = DeepgramClient(api_key=DEEPGRAM_API_KEY)
+if GROQ_API_KEY and DEEPGRAM_API_KEY:
+    # Initialize Clients
+    groq_client = AsyncGroq(api_key=GROQ_API_KEY)
+    # Used for TTS (REST)
+    deepgram_client = DeepgramClient(api_key=DEEPGRAM_API_KEY)
+else:
+    logger.warning("GROQ_API_KEY or DEEPGRAM_API_KEY not set. Real-time voice features v2 will be disabled.")
 ml_service = MLModelService() # Initialize ML Service
 import requests
 tts_session = requests.Session()
